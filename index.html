@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Graphite One — Briefing for Burrows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f1e7;
+    --paper-2: #ede5d3;
+    --ink: #14151a;
+    --ink-soft: #3a3b42;
+    --muted: #6e6a5e;
+    --rule: #cfc3a5;
+    --rule-soft: #ded3b8;
+    --accent: #8a3a1c;
+    --accent-deep: #5e2511;
+    --accent-soft: #b7572d;
+    --positive: #2f5d3b;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(138,58,28,0.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(20,21,26,0.05), transparent 55%),
+      var(--paper);
+    background-attachment: fixed;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .grain {
+    pointer-events: none;
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 48px 96px;
+  }
+
+  /* Masthead */
+  header.mast {
+    border-top: 4px double var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 22px 0 18px;
+    margin-bottom: 28px;
+  }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .kicker .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 999px;
+  }
+  h1.title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    margin: 14px 0 6px;
+    color: var(--ink);
+  }
+  h1.title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent-deep);
+  }
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-row span strong { color: var(--ink); font-weight: 600; }
+
+  /* Tabs */
+  nav.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    gap: 0;
+    margin: 0 0 36px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    padding-top: 6px;
+  }
+  nav.tabs::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -1px 0;
+    background: linear-gradient(to bottom, var(--paper) 60%, rgba(246,241,231,0.0));
+    pointer-events: none;
+    z-index: -1;
+  }
+  .tab {
+    appearance: none;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 18px 22px 14px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color .2s ease, border-color .2s ease;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .tab .num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0;
+    color: var(--accent);
+  }
+  .tab[aria-selected="true"] .num { color: var(--accent-deep); }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel[data-active="true"] { display: block; animation: fade .35s ease; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Article */
+  article { color: var(--ink); }
+  article p {
+    margin: 0 0 1.05em;
+    font-size: 17px;
+    line-height: 1.62;
+  }
+  article p:first-of-type::first-line {
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+  }
+
+  h2.section {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.15;
+    margin: 44px 0 14px;
+    letter-spacing: -0.01em;
+    position: relative;
+    padding-top: 18px;
+  }
+  h2.section::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 2px;
+    background: var(--accent);
+    position: absolute;
+    top: 0; left: 0;
+  }
+  h3.sub {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    margin: 28px 0 10px;
+    letter-spacing: -0.005em;
+  }
+
+  .lede {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--ink);
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 20px;
+    margin: 8px 0 30px;
+  }
+  .lede em { color: var(--accent-deep); font-style: italic; }
+
+  strong.lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    font-weight: 600;
+    display: inline-block;
+    margin-right: 8px;
+  }
+
+  /* Tables */
+  .table-wrap { margin: 18px 0 28px; overflow-x: auto; }
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    background: rgba(255,253,247,0.5);
+    border: 1px solid var(--rule);
+  }
+  table.data caption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 0 0 8px;
+    caption-side: top;
+  }
+  table.data th, table.data td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  table.data th {
+    background: var(--paper-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+  table.data tr:last-child td { border-bottom: 0; }
+  table.data td.num, table.data th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  table.data tr.total td {
+    font-weight: 600;
+    background: rgba(138,58,28,0.05);
+    border-top: 1px solid var(--accent);
+  }
+
+  /* Pull data */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin: 16px 0 28px;
+  }
+  .stat {
+    border: 1px solid var(--rule);
+    background: rgba(255,253,247,0.6);
+    padding: 14px 16px;
+  }
+  .stat .lbl-s {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .stat .val {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .stat .val small {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  /* Lists tuned for prose */
+  article ul.refined {
+    margin: 4px 0 22px;
+    padding: 0;
+    list-style: none;
+  }
+  article ul.refined li {
+    padding: 6px 0 6px 22px;
+    position: relative;
+    border-bottom: 1px dotted var(--rule);
+  }
+  article ul.refined li:last-child { border-bottom: 0; }
+  article ul.refined li::before {
+    content: "§";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  footer.foot {
+    margin-top: 64px;
+    padding-top: 18px;
+    border-top: 4px double var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer.foot a { color: var(--accent); text-decoration: none; }
+
+  /* Notes panel — editorial commentary */
+  .note-intro {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    background: rgba(255,253,247,0.6);
+    padding: 18px 22px;
+    margin: 0 0 36px;
+  }
+  .flag {
+    margin: 28px 0 0;
+    padding: 22px 0 4px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 24px;
+  }
+  .flag:first-of-type { border-top: 0; padding-top: 0; }
+  .flag .marker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 6px;
+    border-right: 1px solid var(--rule);
+    padding-right: 18px;
+    line-height: 1.35;
+  }
+  .flag .marker .num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent-deep);
+    display: block;
+    letter-spacing: 0;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .flag h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+  }
+  .flag p {
+    margin: 0 0 10px;
+    font-size: 16.5px;
+    line-height: 1.6;
+  }
+  .flag p:last-child { margin-bottom: 0; }
+  .flag .severity {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 999px;
+    background: rgba(255,253,247,0.7);
+  }
+  .flag .severity.high { color: #fff; background: var(--accent-deep); border-color: var(--accent-deep); }
+  .flag .severity.med { color: var(--accent); }
+  .flag .severity.low { color: var(--muted); border-color: var(--rule); }
+
+  @media (max-width: 720px) {
+    .flag { grid-template-columns: 1fr; gap: 8px; }
+    .flag .marker { border-right: 0; padding-right: 0; padding-top: 0; }
+  }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .grain { display: none; }
+    nav.tabs { position: static; border-bottom: 0; padding: 0; }
+    .tab { display: none; }
+    .panel { display: block !important; page-break-after: always; }
+    .panel + .panel { padding-top: 24px; }
+    .wrap { padding: 24px; max-width: none; }
+  }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 32px 22px 64px; }
+    .tab { padding: 14px 14px 12px; font-size: 11px; }
+    h1.title { font-size: 44px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="kicker">
+      <span>Confidential briefing &nbsp;·&nbsp; Prepared for J. Burrows</span>
+      <span class="pill">Two documents + analyst notes</span>
+    </div>
+    <h1 class="title">Graphite One <em>Inc.</em></h1>
+    <p class="subtitle">Feasibility Study and Q1 2026 investor deck, in summary.</p>
+    <div class="meta-row">
+      <span><strong>Tickers</strong> &nbsp; TSX-V: GPH &nbsp;·&nbsp; OTCQX: GPHOF</span>
+      <span><strong>Project</strong> &nbsp; Graphite Creek, Alaska + Niles, Ohio</span>
+      <span><strong>Date</strong> &nbsp; May 2026</span>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Document tabs">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="panel-fs" id="tab-fs">
+      <span class="num">01</span> Feasibility Study
+    </button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-deck" id="tab-deck">
+      <span class="num">02</span> Investor Deck Q1 2026
+    </button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="panel-notes" id="tab-notes">
+      <span class="num">03</span> What to flag
+    </button>
+  </nav>
+
+  <!-- =========================== PANEL 1 =========================== -->
+  <section class="panel" id="panel-fs" role="tabpanel" aria-labelledby="tab-fs" data-active="true">
+    <article>
+      <p class="lede">A 21-year open-pit graphite mine on the Seward Peninsula feeding a phased anode-materials plant in Ohio. Pre-tax NPV at 8% of <em>$6.40 billion</em>, after-tax IRR of <em>26.8%</em>, total capex about <em>$5.04 billion</em>.</p>
+
+      <p><strong class="lbl">Document</strong>NI 43-101 Technical Report and Feasibility Study, "Graphite Creek Project," Seward Peninsula, Alaska. Prepared by Barr Engineering Co. with contributions from Hatch Ltd. and Alaska Earth Sciences for Graphite One Inc. Effective date March 25, 2025; signed April 22, 2025.</p>
+
+      <p><strong class="lbl">Concept</strong>Graphite One is pursuing a vertically integrated, 100% U.S.-based graphite supply chain. The plan ties two physical sites together: an open-pit mine and concentrator on the Seward Peninsula about 60 km north of Nome, Alaska, and a Secondary Treatment Plant (STP) in Niles, Ohio that converts natural graphite concentrate into lithium-ion battery anode materials and other refined graphite products. Because the mine takes longer to permit and build than the plant, the STP is designed to start up first using purchased open-market graphite, then phase in Graphite Creek concentrate when it becomes available.</p>
+
+      <h2 class="section">Property and geology</h2>
+      <p>The Alaska property covers 9,583 hectares (23,680 acres) under 176 active state mining claims. The deposit lies in the Kigluaik Mountains within high-grade granulite-facies metamorphic rocks. Mineralization is a graphite-rich schist with strong continuity along strike, and the proposed mining footprint sits well inside the claim block.</p>
+
+      <h2 class="section">Resources and reserves</h2>
+
+      <div class="table-wrap">
+        <table class="data">
+          <caption>Mineral resources, effective February 2025 (CIM-classified)</caption>
+          <thead>
+            <tr><th>Classification</th><th class="num">Tonnage (Mt)</th><th class="num">Grade (% Cg)</th><th class="num">Contained graphite (kt)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Measured</td><td class="num">5.11</td><td class="num">5.33</td><td class="num">272</td></tr>
+            <tr><td>Indicated</td><td class="num">99.57</td><td class="num">4.54</td><td class="num">4,523</td></tr>
+            <tr class="total"><td>Measured + Indicated</td><td class="num">104.68</td><td class="num">4.58</td><td class="num">4,796</td></tr>
+            <tr><td>Inferred</td><td class="num">268.10</td><td class="num">4.31</td><td class="num">11,568</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data">
+          <caption>Mineral reserves (Proven and Probable)</caption>
+          <thead>
+            <tr><th>Class</th><th class="num">Diluted tonnes (kt)</th><th class="num">Diluted grade (% Cg)</th><th class="num">Contained graphite (kt)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Proven</td><td class="num">4,099</td><td class="num">5.80</td><td class="num">238</td></tr>
+            <tr><td>Probable</td><td class="num">67,120</td><td class="num">5.18</td><td class="num">3,480</td></tr>
+            <tr class="total"><td>Total Proven + Probable</td><td class="num">71,219</td><td class="num">5.22</td><td class="num">3,717</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Reserves use a raised variable cut-off of 2.0 to 3.0% Cg, a $1,200/t average net graphite price, royalties of 3.5 to 8.0%, and 90% mill recovery. The pit also contains an additional 17.4 Mt of Measured and Indicated material between the economic and raised cut-offs that has been treated as waste, plus 40.4 Mt of Inferred material treated as waste.</p>
+
+      <h2 class="section">Mining and processing</h2>
+      <p>Conventional open pit, self-performed, with a hydraulic shovel, front-end loader, 141-tonne haul trucks, and 171 mm drills, running 24/7 across four crews. Five pushbacks, 8 m benches, roughly 42.4 degree overall slopes, 30 m ramps. Strip ratio runs about 2:1 for the first five years and rises afterward. Mine life is 21 years.</p>
+      <p>The mill takes 10,000 tpd of ROM ore and processes 3.6 Mtpa to produce 175,000 tpa of 95%-graphite concentrate at 90% recovery. The flowsheet runs jaw crusher, SAG mill with internal flash and rougher flotation, ball-mill regrind, seven cleaner stages with two more regrind steps, then thickening, filtering, drying, and load-out into 20-foot containers.</p>
+
+      <h2 class="section">Logistics</h2>
+      <p>Containers truck from mine to Nome, sit at the port until the seasonal thaw, ship by self-loading container vessel to Prince Rupert, BC, then move by unit train to Niles, Ohio. The full chain runs about 8,000 km.</p>
+
+      <h2 class="section">Secondary Treatment Plant (Niles, OH)</h2>
+      <p>Built in seven 25,000 tpa modules over roughly five years on an 89 ha site with 88 buildings. Total feed of 175,000 tpa of natural graphite concentrate plus coke, pitch, and anode precursors yields about 256,000 tpa of products: coated spherical and blended anode materials for Li-ion batteries, purified specialty graphite, and unpurified industrial graphite. The process backbone is high-temperature, electrically heated furnaces for purification and graphitization. Niles was chosen for relatively low power costs and skilled workforce.</p>
+
+      <h2 class="section">Waste, water, and closure</h2>
+      <p>Tailings are filtered and co-mingled with waste rock in a lined Waste Management Facility north of the pit, sized for roughly 307 Mt (139 Mm³), built in three stages to enable contemporaneous reclamation. Most non-overburden waste is potentially acid generating and managed accordingly. Closure costs are included in the operating model with a ten-year post-closure monitoring period.</p>
+
+      <h2 class="section">Capital cost (Q1 2025 USD, no escalation)</h2>
+
+      <div class="table-wrap">
+        <table class="data">
+          <caption>Project capital cost summary</caption>
+          <thead>
+            <tr><th>Component</th><th class="num">Initial ($M)</th><th class="num">Sustaining + Closure ($M)</th><th class="num">Total ($M)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Graphite Creek (mine, mill, WMF, infrastructure)</td><td class="num">949.4</td><td class="num">176.1</td><td class="num">1,125.6</td></tr>
+            <tr><td>Niles STP (incl. $783.9M / 25% contingency)</td><td class="num">3,919.4</td><td class="num">in opex</td><td class="num">3,919.4</td></tr>
+            <tr class="total"><td>Project total</td><td class="num">4,868.8</td><td class="num">176.1</td><td class="num">5,044.9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The Alaska initial capex includes a contingency of $94.4M (11.2%). The Niles initial includes $783.9M (25%) contingency. All figures are in U.S. dollars at Q1 2025 with no escalation.</p>
+
+      <h2 class="section">Operating cost</h2>
+      <p>Alaska total runs $610/t concentrate ($239 mining, $288 milling, $84 G&amp;A), with $372/t for transport to Ohio. The STP runs $2,119/t of product. Fully loaded, integrated unit cost is $2,804/t of STP product, and life-of-mine operating costs total about $15.62 billion.</p>
+
+      <h2 class="section">Economic results</h2>
+
+      <div class="table-wrap">
+        <table class="data">
+          <caption>Engineering economic model, single-price case</caption>
+          <thead>
+            <tr><th>Metric</th><th class="num">Pre-tax</th><th class="num">After-tax</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Total revenue, net of royalties ($M)</td><td class="num">43,561</td><td class="num">43,561</td></tr>
+            <tr><td>Cash flow ($M)</td><td class="num">22,898</td><td class="num">18,349</td></tr>
+            <tr><td>NPV @ 6% ($M)</td><td class="num">8,677</td><td class="num">6,876</td></tr>
+            <tr><td>NPV @ 8% ($M)</td><td class="num">6,397</td><td class="num">5,030</td></tr>
+            <tr><td>NPV @ 10% ($M)</td><td class="num">4,740</td><td class="num">3,687</td></tr>
+            <tr><td>IRR</td><td class="num">29.8%</td><td class="num">26.8%</td></tr>
+            <tr><td>Payback</td><td class="num">7.3 yrs</td><td class="num">7.5 yrs</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Total LOM tax burden is about $4.55 billion (federal 21%, Alaska state 9.4%, Alaska mining license 7%, Ohio property and CAT, plus the Advanced Manufacturing Production Tax Credit where applicable). Univariate sensitivity at plus or minus 30% shows the project is most sensitive to refined product pricing, less so to operating and capital costs.</p>
+
+      <h2 class="section">Permitting and environment</h2>
+      <p>The QPs identify no fatal flaws. Major Alaska permits run through a USACE Section 404 process (lead federal NEPA), ADEC air, and ADFG fish habitat. Baseline meteorological, aquatic, wildlife, and cultural resource programs are underway. ESA-listed polar bear, Steller's eider, and spectacled eider may trigger Section 7 consultation. The Ohio site is in attainment for ozone and sits on a previously developed industrial parcel, with a PSD-class PTIO expected.</p>
+
+      <h2 class="section">Bottom line</h2>
+      <p>Per the Qualified Persons, the project is technically and economically viable on the assumed schedule and pricing. The primary residual execution risks are permitting timelines, the seasonal Nome shipping window, and refined-product price realization.</p>
+    </article>
+  </section>
+
+  <!-- =========================== PANEL 2 =========================== -->
+  <section class="panel" id="panel-deck" role="tabpanel" aria-labelledby="tab-deck">
+    <article>
+      <p class="lede">Twenty slides. The pitch: a fully U.S.-domiciled graphite supply chain, with the Ohio anode plant built <em>before</em> the mine, financed in part by a non-binding <em>$2.07 billion</em> EXIM letter of interest and a <em>$37.3 million</em> DoD grant.</p>
+
+      <p><strong class="lbl">Document</strong>Graphite One Inc. corporate presentation, Q1 2026, "Fueling the Future: Graphite Solutions for Next-Gen Energy."</p>
+
+      <h2 class="section">The pitch</h2>
+      <p>Graphite One is building a fully integrated, U.S.-domiciled graphite supply chain to serve EV batteries, energy storage, and defense, anchored by the Graphite Creek deposit (described as the largest known graphite deposit in the U.S. per the USGS) and a manufacturing complex in Ohio. The deck refreshes the story with the post-feasibility-study numbers and lays out a more aggressive front end of the build plan than the prior PFS implied.</p>
+
+      <h2 class="section">Why now</h2>
+      <p>The U.S. is heavily import-dependent for graphite, with China responsible for roughly 97% of global supply. Graphite is on the critical-minerals list for both clean-energy applications (EV anodes, energy storage systems) and defense end uses (ammunition, armor, submarine, aircraft components). Reshoring the supply chain is positioned as both an economic and a national-security imperative.</p>
+
+      <h2 class="section">Capital structure (March 19, 2026)</h2>
+
+      <div class="stat-grid">
+        <div class="stat"><span class="lbl-s">Common shares</span><span class="val">208.4 <small>M</small></span></div>
+        <div class="stat"><span class="lbl-s">Fully diluted</span><span class="val">251.4 <small>M</small></span></div>
+        <div class="stat"><span class="lbl-s">Market cap (TSX-V)</span><span class="val">C$225.1 <small>M @ C$1.08</small></span></div>
+        <div class="stat"><span class="lbl-s">Market cap (OTCQX)</span><span class="val">US$164.7 <small>M @ US$0.79</small></span></div>
+        <div class="stat"><span class="lbl-s">ADV — GPH</span><span class="val">432k <small>shares</small></span></div>
+        <div class="stat"><span class="lbl-s">ADV — GPHOF</span><span class="val">341k <small>shares</small></span></div>
+      </div>
+
+      <p>RSUs (4.42M), PSUs (4.87M), options (11.79M at WAEP C$1.09), warrants (21.80M at WAEP C$1.62), and broker warrants (122k at WAEP C$1.00) make up the dilution stack.</p>
+
+      <h2 class="section">Strategy: the new sequencing</h2>
+      <p>Rather than waiting on the mine, the company is building the downstream first and using purchased feedstock to bring it online.</p>
+      <ul class="refined">
+        <li>Build artificial graphite (AG) AAM facilities in stages, working backward from the end of the process: finishing and blending plant first, then graphitization, then precursor pilot, then a domestic-feed precursor plant.</li>
+        <li>Build natural graphite (NG) AAM facilities ahead of the mine in 25,000 tpy modules, running on purchased natural graphite while the customer base develops.</li>
+        <li>Permit Graphite Creek in parallel and construct it once the NG AAM product is proven and needed.</li>
+      </ul>
+
+      <h2 class="section">The Ohio AG manufacturing rollout</h2>
+      <h3 class="sub">Phase 1 — end-2027</h3>
+      <p>10,000 tpy AG AAM finishing and blending plant, capex about $73M, plus a graphitization line by mid-2028 at about $57M.</p>
+      <h3 class="sub">Phase 2 — end-2029 to end-2030</h3>
+      <p>Scale finishing and blending to 25,000 tpy, add a 1,000 tpy precursor pilot, a 25,000 tpy graphitization line, and a 25,000 tpy commercial AG precursor plant. Capex about $435M (a separate slide cites $378M for the late-2029 increment specifically).</p>
+      <h3 class="sub">Phase 3 — end-2032</h3>
+      <p>Three more modules to reach 100,000 tpy total AG AAM. Capex about $1.3 billion.</p>
+
+      <div class="table-wrap">
+        <table class="data">
+          <caption>Steady-state economics by module size</caption>
+          <thead>
+            <tr><th>Plant scale</th><th class="num">Revenue ($M)</th><th class="num">Cost of production ($M)</th><th class="num">Operating profit ($M)</th><th class="num">EBITDA ($M)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>10,000 tpy</td><td class="num">89</td><td class="num">45</td><td class="num">44</td><td class="num">40</td></tr>
+            <tr><td>25,000 tpy</td><td class="num">236</td><td class="num">124</td><td class="num">112</td><td class="num">141</td></tr>
+            <tr><td>100,000 tpy</td><td class="num">994</td><td class="num">496</td><td class="num">448</td><td class="num">530</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section">Anode technology</h2>
+      <p>Exclusive technology license with Chenyu covering the U.S., Mexico, and Canada, with a right of first refusal for the U.K., EU, and Saudi Arabia. The arrangement is fee-for-service consulting plus a supply agreement for precursors. Chenyu takes no equity, no board seats, and has no governance influence. The deck stresses Graphite One can replicate a proven, customer-qualified commercial-scale AAM facility.</p>
+
+      <h2 class="section">Federal and state support</h2>
+      <ul class="refined">
+        <li><strong>DoD grant</strong> of $37.3 million (slide 6 cites $37.5 million) helped fast-track the feasibility study.</li>
+        <li><strong>EXIM Bank</strong> non-binding letters of interest for up to $2.07 billion: roughly $670 million for the mine and $1.4 billion for the Ohio AAM facility. Applications targeted for 2026.</li>
+        <li><strong>FAST-41</strong> Federal Permitting Dashboard. First Alaskan mining project listed there. Endorsements from Sen. Dan Sullivan, Sen. Lisa Murkowski, Alaska Gov. Mike Dunleavy, and FAST-41 Council Executive Director Emily Domenech.</li>
+      </ul>
+
+      <h2 class="section">Feasibility study refresh</h2>
+      <p>The deck restates the FS economics: pre-tax NPV $6.4B, IRR 30%, payback 7.3 years; post-tax NPV $5.0B, IRR 27%, payback 7.5 years. Total capex $5.0B with $0.9B contingency ($3.9B AAM plant, $1.1B mine). Annual concentrate production rises from 53,000 tpy in the PFS to 175,000 tpy in the FS, a roughly 3.3x increase. Mine life is stated as 20 years and STP life 22 years; the underlying technical report says 21-year mine life, so this is a slight rounding in the marketing copy. Updated proven and probable reserve tonnage is 317% of the PFS reserve, with contained graphite at 296% of PFS.</p>
+      <p>Production targets: 48,000 tpy commercial AAM by 2028, mine startup in 2030, and 169,000 tpy AAM production by 2031. The STP averages 256,500 tpy across AAM (169,000 tpy), purified specialty graphite (25,000 tpy), and unpurified graphite and carbon products (31,000 tpy).</p>
+
+      <h2 class="section">Indigenous and community alignment</h2>
+      <p>Strategic investments and supportive statements from three Alaska Native regional corporations: Bering Straits Native Corporation (Dan Graham, CEO), Doyon Limited (Aaron Schutt, President &amp; CEO), and Aleut Corporation (Skoey Vergen, President &amp; CEO). The project is sited on 100% Alaska state-owned land and is positioned to add 256 local jobs.</p>
+
+      <h2 class="section">Management team</h2>
+      <p>Anthony Huston (founder, CEO, director), Doug Smith (executive chair, ex-First Coal CEO), Mike Schaffner (COO, 35+ years in mine construction and operations), Gordon Jang (CFO, ex-Fortuna, Augusta, Lundin, Pan American Silver), Andrew Tan (SVP Graphite Technology, ex-SGL Carbon), Kevin Torpy (SVP Mining, ex-Ambler Metals, Titan Mining), Kirsten Fristad (Chief Geologist, two decades in Arctic exploration), and Rebecca Donald (VP Finance, ex-BP Alaska, Ambler Metals).</p>
+
+      <h2 class="section">How the two documents fit together</h2>
+      <p>The feasibility study is the technical and economic backbone the deck is selling against. The deck takes that base case and layers on a phased downstream-first execution sequence (AG modules built and revenue-producing well before the mine), a financing path (DoD grant secured, EXIM letters of interest, FAST-41 listing for permitting), and a domestic-policy narrative around critical minerals and defense supply security.</p>
+    </article>
+  </section>
+
+  <!-- =========================== PANEL 3 =========================== -->
+  <section class="panel" id="panel-notes" role="tabpanel" aria-labelledby="tab-notes">
+    <article>
+      <p class="lede">A reader who only saw tabs one and two would walk away with a cleaner story than the documents support. These are the items that don't lead either document but materially affect how to read them.</p>
+
+      <div class="note-intro">
+        Both summaries are faithful to the source. The notes below are editorial: things either buried deep in the FS, absent from the deck, or only visible by reading the two side by side. They are not claims of bad faith on the company's part. They are the things a careful reader would otherwise have to dig out.
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">i</span>
+          Most material
+          <br><span class="severity high">High</span>
+        </div>
+        <div>
+          <h3>The pricing assumption is more aggressive than the headline number suggests</h3>
+          <p>The $1,200/t figure that appears in the FS summary is the graphite-concentrate price used for pit optimization, not the price that drives the NPV. The economic model uses a weighted-average refined-product price of <strong>$7,843/t</strong> (Table 22-1, Chapter 22), with individual products ranging from about $610/t (coke reject) to $11,563/t (blended AG and NG anode material).</p>
+          <p>Inside that price stack is an explicit "Tariff Allowance" of $1,362 to $3,705 per tonne, baked into each product. The economics assume Chinese imports remain heavily tariffed and that Graphite One captures the spread. If U.S. tariff posture on graphite eases, the after-tax NPV compresses materially. The deck does not surface this assumption.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">ii</span>
+          Capital structure
+          <br><span class="severity high">High</span>
+        </div>
+        <div>
+          <h3>The funding gap is the elephant in the room</h3>
+          <p>Total project capex is roughly $5.0 billion. Current market capitalization is C$225 million as of March 19, 2026. The EXIM Bank letters of interest are <strong>non-binding</strong> and total $2.07 billion at the upper end. Even on the assumption that EXIM converts in full, that leaves approximately $2.9 billion to raise through some combination of equity, strategic capital, customer prepayment, or additional debt.</p>
+          <p>At today's share price the equity portion of any such gap is materially dilutive. Neither document quantifies the financing path or addresses dilution.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">iii</span>
+          Model assumption
+          <br><span class="severity high">High</span>
+        </div>
+        <div>
+          <h3>The FS NPV is an equity-funded number</h3>
+          <p>The FS economic model states explicitly: "no management fees or financing costs (equity fund-raising was assumed)." The headline pre-tax and post-tax NPVs and IRRs do not reflect debt service on the EXIM facilities the company is pursuing in parallel.</p>
+          <p>This is standard practice in NI 43-101 reports, but it means the marketed economics describe a project, not a financing.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">iv</span>
+          Commercial
+          <br><span class="severity high">High</span>
+        </div>
+        <div>
+          <h3>No binding customer offtake disclosed</h3>
+          <p>For a $5 billion vertically integrated build aimed at a market currently dominated by Chinese supply at significantly lower realized prices than the FS assumes, the absence of disclosed binding offtake agreements is a notable gap. The deck mentions customer qualification testing as a Phase 1 objective but does not name customers or volumes.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">v</span>
+          Strategy
+          <br><span class="severity med">Medium</span>
+        </div>
+        <div>
+          <h3>The deck and the FS describe different projects</h3>
+          <p>The FS economics are built around the integrated mine plus the seven-module Niles STP processing natural-graphite concentrate. The deck reorders execution: build artificial-graphite (AG) anode capacity first using purchased feedstock, run those modules from end-2027 through the early 2030s, then bring on the natural-graphite mine in 2030 and scale the natural-graphite STP afterward.</p>
+          <p>That is a different project shape than the FS NPV models. The FS-derived economics should not be read as the economics of the Phase 1 to Phase 3 AG facility laid out in slides 12 and 13. The deck's plant-scale economics (10,000 to 100,000 tpy AG AAM) are a separate model.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">vi</span>
+          Policy and incentives
+          <br><span class="severity med">Medium</span>
+        </div>
+        <div>
+          <h3>Phase 1 of the AG plant may not be FEOC-compliant</h3>
+          <p>Slide 12 of the deck explicitly labels Phase 2 as "Non-FEOC" (Foreign Entity of Concern, as defined by the Department of Energy). The implication is that Phase 1, the 10,000 tpy finishing and blending plant slated for end-2027, may not qualify under FEOC rules.</p>
+          <p>This matters because FEOC compliance gates IRA tax-credit eligibility (45X advanced manufacturing production credit) and access to certain customer tiers, particularly automakers selling vehicles eligible for the 30D consumer EV credit. The Chenyu technology license is the relevant context here, given Chenyu's origin.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">vii</span>
+          Engineering completeness
+          <br><span class="severity med">Medium</span>
+        </div>
+        <div>
+          <h3>QPs flag follow-on work that has not yet been done</h3>
+          <p>No fatal flaws are identified, but the FS conclusions and recommendations call for additional work before construction, including: pilot-scale testing of the STP technology before full-scale deployment, an HPGR-versus-SAG-mill tradeoff revisit, additional metallurgical and ore-hardness testing across multiple ore types, supplemental geotechnical drilling at the pit, mill, and WMF, water-treatability bench and pilot testing, and a full-scale dynamic supply-chain study for the Nome to Niles route.</p>
+          <p>Routine for a feasibility-stage report, but the items are not trivial and have cost and schedule implications if they surface surprises.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">viii</span>
+          Document discrepancies
+          <br><span class="severity low">Low</span>
+        </div>
+        <div>
+          <h3>Numbers shift slightly between the FS and the deck</h3>
+          <p>Mine life is 21 years in the technical report and 20 years in the deck. The DoD grant is $37.3 million on slide 3 and $37.5 million on slide 6. The deck refers to "175,000 tpy" graphite concentrate (FS-consistent) alongside AG modules of "25,000 tpy" anode material; these are different products at different points in the chain and a quick read can conflate them.</p>
+          <p>None of these are dishonest. They are the kind of marketing rounding that becomes a problem only if a downstream reader treats deck figures as FS-grade.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">ix</span>
+          Disclosure
+          <br><span class="severity low">Low</span>
+        </div>
+        <div>
+          <h3>Strategic Native Corporation investment amounts are not disclosed</h3>
+          <p>Slide 18 quotes Bering Straits Native Corporation, Doyon Limited, and Aleut Corporation as supporters and investors, but does not state dollar amounts, ownership stakes, or terms. These are politically and operationally important relationships in Alaska and worth following up on through the company's continuous disclosure record on SEDAR+.</p>
+        </div>
+      </div>
+
+      <div class="flag">
+        <div class="marker">
+          <span class="num">x</span>
+          Reference
+          <br><span class="severity low">Low</span>
+        </div>
+        <div>
+          <h3>Qualified Persons (for the record)</h3>
+          <p>Eight QPs signed the technical report on April 22, 2025: Jason Todd, Chotipong Somrit, Jedediah Greenwood (PE), Scott Phillips (PE), and Daniel R. Palo (PE) of Barr Engineering Co.; Jon Godwin (P.Eng.) and Arlene P. Dixon (PE) of Hatch Ltd.; and Robert M. Retherford of Alaska Earth Sciences, Inc.</p>
+          <p>Construction durations also worth knowing: roughly 22 months to build and 6 months to commission the first two STP modules, with all seven modules expected over about 60 months continuous; mine pre-production runs about 30 months. These are the timing inputs behind the deck's 2030 mine-startup target.</p>
+        </div>
+      </div>
+
+    </article>
+  </section>
+
+  <footer class="foot">
+    <span>Sourced from the NI 43-101 FS (Apr 22, 2025) and the Q1 2026 corporate deck</span>
+    <span><a href="https://graphiteoneinc.com">graphiteoneinc.com</a></span>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+
+    function activate(tab) {
+      tabs.forEach(t => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'));
+      panels.forEach(p => {
+        const isMatch = p.id === tab.getAttribute('aria-controls');
+        p.setAttribute('data-active', isMatch ? 'true' : 'false');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', (e) => {
+        const idx = Array.from(tabs).indexOf(tab);
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const dir = e.key === 'ArrowRight' ? 1 : -1;
+          const next = tabs[(idx + dir + tabs.length) % tabs.length];
+          next.focus();
+          activate(next);
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
